@@ -1,30 +1,40 @@
-import { Fragment, useEffect, useState } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import Link from 'next/link'
-import { useRouter } from 'next/router';
+import {  useEffect, useState } from 'react'
+import { Disclosure  } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
-const navigation = [
-  { name: 'Home', href: '/', current: false },
-  { name: 'Products', href: '/products', current: false },
-  { name: 'Contacts', href: '/contacts', current: false }
-]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Example() {
-    const [bg, setBg] = useState("")
-    const router = useRouter();
-    navigation.forEach(item => {
-        item.current = (router.pathname === item.href);
-      });
+  const [scrollY, setScrollY] = useState(0);
+  const [productSection, setProductSection] = useState(false);
+  const [homeSection, setHomeSection] = useState(false);
+  const [contactSection, setContactSection] = useState(false);
+
+  const navigation = [
+    { name: 'Home', href: '/', current: homeSection },
+    { name: 'Products', href: '/products', current: productSection },
+    { name: 'Contacts', href: '/contacts', current: contactSection }
+  ]
+
       useEffect(()=>{
-        setBg(router.pathname != "/products" ? "bg-white" : "bg-transparent");
-      }, [router.pathname])
+        const handleEjeY = () =>{
+          let ejeY = window.scrollY
+          setScrollY(ejeY)          
+        }
+        window.addEventListener("scroll", handleEjeY)
+          if(scrollY >=0 && scrollY <= 862){
+            setHomeSection(true)
+          }else{
+            setHomeSection(false)
+          }
+          if(scrollY>= 862){setProductSection(true)}else{setProductSection(false)}
+  
+      }, [scrollY])
   return (
-    <Disclosure as="nav" className={`${bg} py-4 min-h-[15vh] sm:flex sm:flex-col items-center justify-center relative z-10`}>
+    <Disclosure as="nav" className={`bg-transparent py-4 min-h-[15vh] sm:flex sm:flex-col items-center justify-center  z-10 fixed top-0 w-full`}>
       {({ open }) => (
         <>
           <div className="sm:w-9/12 px-2 sm:px-6 lg:px-0">
@@ -59,18 +69,17 @@ export default function Example() {
                 {/* Navegación */}
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
+                    {navigation.map((item, i) => (
+                      <p
+                        key={i}
                         className={classNames(
-                          item.current ? 'font-bold text-[#1e1e1e]' : 'text-[#8E8E8E] hover:text-[#1e1e1e]',
+                          item.current ? 'font-bold text-green-600' : 'text-[#8E8E8E] hover:text-green-600',
                           'rounded-md px-3 py-2 text-sm font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
-                      </Link>
+                      </p>
                     ))}
                   </div>
                 </div>
@@ -82,9 +91,9 @@ export default function Example() {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pb-3 pt-2">
-              {navigation.map((item) => (
+              {navigation.map((item, i) => (
                 <Disclosure.Button
-                  key={item.name}
+                  key={i}
                   as="a"
                   href={item.href}
                   className={classNames(
