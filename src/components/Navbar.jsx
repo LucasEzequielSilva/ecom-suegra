@@ -7,34 +7,40 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
-  const [scrollY, setScrollY] = useState(0);
+export default function Example({show, setShow}) {
   const [productSection, setProductSection] = useState(false);
   const [homeSection, setHomeSection] = useState(false);
   const [contactSection, setContactSection] = useState(false);
-
   const navigation = [
     { name: 'Home', href: '/', current: homeSection },
     { name: 'Products', href: '/products', current: productSection },
     { name: 'Contacts', href: '/contacts', current: contactSection }
   ]
+  const controlNavbar = () => {
+    if (window.scrollY > window.innerHeight * 0.1) {
+      setShow(false);
+    } else {
+      setShow(true);
+    }
+  };
 
       useEffect(()=>{
-        const handleEjeY = () =>{
-          let ejeY = window.scrollY
-          setScrollY(ejeY)          
-        }
-        window.addEventListener("scroll", handleEjeY)
-          if(scrollY >=0 && scrollY <= 862){
+
+        window.addEventListener("scroll", controlNavbar)
+          if(window.scrollY >=0 && window.scrollY <= 862){
             setHomeSection(true)
           }else{
             setHomeSection(false)
           }
           if(scrollY>= 862){setProductSection(true)}else{setProductSection(false)}
-  
-      }, [scrollY])
+          window.addEventListener('scroll', controlNavbar)
+          return () => {
+            window.removeEventListener('scroll', controlNavbar)
+          }
+      }, [])
+
   return (
-    <Disclosure as="nav" className={`bg-transparent py-4 min-h-[15vh] sm:flex sm:flex-col items-center justify-center  z-10 fixed top-0 w-full`}>
+    <Disclosure as="nav" className={`fixed top-0 bg-transparent py-4 min-h-[15vh] sm:flex sm:flex-col items-center justify-center  z-10 w-full transition duration-300 ${show ? '' : 'transform -translate-y-full'}`}>
       {({ open }) => (
         <>
           <div className="sm:w-9/12 px-2 sm:px-6 lg:px-0">
